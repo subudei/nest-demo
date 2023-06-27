@@ -1,3 +1,9 @@
+/*
+Controller is a class annotated with a @Controller() decorator. Decorators associate classes with required metadata and enable Nest to create a routing map (tie requests to the corresponding controllers).
+Controllers are responsible for handling incoming requests and returning responses to the client.
+Service is a class annotated with an @Injectable() decorator. The @Injectable() decorator marks the class as a provider that can be injected into other classes as a dependency.
+Service is responsible for data storage/retrieval and business logic. Service is used by the Controller.
+*/
 import { Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
