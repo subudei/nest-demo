@@ -19,7 +19,6 @@ export class AuthService {
     const hash = await argon.hash(dto.password);
 
     // step 2 :  save user to database
-
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -45,7 +44,6 @@ export class AuthService {
 
   async signin(dto: AuthDto) {
     // find user by email
-
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -56,7 +54,6 @@ export class AuthService {
       throw new ForbiddenException('Wrong email');
     }
     // compare password
-
     const isPasswordValid = await argon.verify(user.hash, dto.password);
     //  argon.verify takes two arguments, the first one is the hash password and the second one is the plain password
     if (!isPasswordValid) {
