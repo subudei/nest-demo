@@ -7,13 +7,19 @@
   -Service is a class annotated with an @Injectable() decorator. The @Injectable() decorator marks the class as a provider that can be injected into other classes as a dependency.
 */
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto';
 @Injectable({})
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {}
   async signup(dto: AuthDto) {
     // step 1 : generate password using argon2
     const hash = await argon.hash(dto.password);
@@ -27,10 +33,8 @@ export class AuthService {
           hash,
         },
       });
-      delete user.hash; // remove password from user object before returning it, it is a good practice to not return password to the client
-
-      // step 3 : return user
-      return user;
+      // step 3 : return token
+      return this.signToken(user.id, user.email);
     } catch (error) {
       // https://github.com/prisma/prisma/issues/17945  =>  PrismaClientKnownRequestError
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -59,7 +63,24 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new ForbiddenException('Wrong password');
     }
-    delete user.hash;
-    return user;
+
+    return this.signToken(user.id, user.email); // return token
+  }
+  //   Sign JWT token is a method that takes two arguments, the first one is the user id and the second one is the user email. Payload is the data that will be stored in the JWT token. The sub property is the user id and the email property is the user email. The signAsync method is used to sign the JWT token. The signAsync method takes two arguments, the first one is the payload and the second one is the options object. The expiresIn property is used to set the expiration time of the JWT token. The secret property is used to set the secret key that will be used to sign the JWT token.
+
+  async signToken(
+    userId: number,
+    email: string,
+  ): Promise<{ access_token: string }> {
+    const payload = { sub: userId, email };
+    const secret = this.config.get('JWT_SECRET');
+    const token = await this.jwt.signAsync(payload, {
+      expiresIn: '15m',
+      secret: secret,
+    });
+
+    return {
+      access_token: token,
+    };
   }
 }
