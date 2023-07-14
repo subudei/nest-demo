@@ -66,8 +66,18 @@ export class AuthService {
 
     return this.signToken(user.id, user.email); // return token
   }
-  //   Sign JWT token is a method that takes two arguments, the first one is the user id and the second one is the user email. Payload is the data that will be stored in the JWT token. The sub property is the user id and the email property is the user email. The signAsync method is used to sign the JWT token. The signAsync method takes two arguments, the first one is the payload and the second one is the options object. The expiresIn property is used to set the expiration time of the JWT token. The secret property is used to set the secret key that will be used to sign the JWT token.
-
+  /*   Sign JWT token is a method that takes two arguments,
+   the first one is the user id and the second one is the user 
+   email. Payload is the data that will be stored in the JWT token.
+    The sub property is the user id and the email property is 
+    the user email. The signAsync method is used to sign the 
+    JWT token. The signAsync method takes two arguments,
+     the first one is the payload and the second one is the
+      options object. The expiresIn property is used to set 
+      the expiration time of the JWT token. The secret property 
+      is used to set the secret key that will be used to sign the 
+      JWT token.
+   */
   async signToken(
     userId: number,
     email: string,
